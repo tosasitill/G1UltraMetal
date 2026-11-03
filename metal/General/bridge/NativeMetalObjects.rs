@@ -173,8 +173,13 @@ pub unsafe extern "C" fn nmb_device_open(loader: *const c_char, cache: *const c_
         options = unsafe { options.with_submission_cache_ownership(atom) };
         // Native host-pointer images support explicit linear row pitches and
         // render directly into the imported surface when its layout is valid.
+        // Default: the runtime's InPlace policy (render targets/shader writes go
+        // through a shadow). X9_HOST_TEXTURE_INPLACE_WRITES (frontend, boot token
+        // x9h1) renders directly into imported pages; that caused the swipe mosaic.
         #[cfg(x9_runtime_latest)]
-        { options.policy.host_page_textures = metal2vulkan::device::HostPageTexturePolicy::InPlaceWrites; }
+        if std::env::var_os("X9_HOST_TEXTURE_INPLACE_WRITES").is_some() {
+            options.policy.host_page_textures = metal2vulkan::device::HostPageTexturePolicy::InPlaceWrites;
+        }
         options.loader = Some(PathBuf::from(loader.to_string_lossy().into_owned()));
         #[cfg(not(x9_runtime_latest))]
         { options.metal_level = Some(MetalLevel::NEWEST); }
