@@ -1,0 +1,5 @@
+{
+ "_comment": "Copy to build/local.json (gitignored) and adjust for this machine.",
+ "developer_dir": "/Users/tosasitill/Downloads/Xcode.app/Contents/Developer",
+ "homebrew": "/opt/homebrew"
+}
